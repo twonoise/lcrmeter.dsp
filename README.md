@@ -8,7 +8,7 @@ Note that we will need blue stereo Line input connector. **It is always of great
 
 Please read [^1] to get an idea how we can built it.
 
-My LCR Meter uses differential signalling. Hardware required is two resistors (let's start at _1k Ohm_ value) between Line-in and Headphone out: `OutL [1k] InL`, `OutR [1k] InR`. Connect DUT (device under test) to inputs: `InL [DUT] InR` (later; now we have it open circuit).
+My LCR Meter uses differential signalling. Hardware required is two resistors (let's start at _1k Ohm_ value) between Line-in and Headphone out: `OutL [1k] InL`, `OutR [1k] InR`. Connect DUT (device under test) to inputs: `InL [DUT] InR` (later; now we leave it open circuit).
 
 To use this `.dsp` code, install [carla](https://github.com/twonoise/carla-patches) and `faust`. **Note** that this Carla tree is equipped with display buttons and meters, not merged to main tree yet.
 
@@ -26,7 +26,7 @@ Note that `.dsp` code also acts as documentation, and it is intended to user enh
 
 SNR and EMI
 -----------
-I have used differential signalling. It doubles amplitude, halves input noise power of ADC, and greatly reduces EMI.
+I have used differential signalling. It doubles amplitude, halves input noise power of ADC, and greatly reduces EMI. That's why stereo input and output need.
 
 There is coherent receiver with 3 stage, 3.3 Hz BW low pass filters. Squeezing it even narrower, produces more ringing and longer settle time, but welcome to try. I also provide video filter. Note that it's switch button is three positional.
 
@@ -37,4 +37,4 @@ This manual for `LCRMeter`, together with its inlined pictures, are licensed und
 `LCRMeter` is MIT license.
 
 
-[^1]: Tek appnote 75W-28152-1 "Capacitance and Inductance Measurements Using an Oscilloscope and a Function Generator" Rev. 02.2022
+[^1]: Tek appnote 75W-28152-2 "Capacitance and Inductance Measurements Using an Oscilloscope and a Function Generator" Rev. 02.2022
