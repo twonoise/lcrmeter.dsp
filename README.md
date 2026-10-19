@@ -20,7 +20,7 @@ Next, using `alsamixer`, set PCM and Headphone level to 100%. At inputs tab (`F4
 
 Now it's time to press `Calib` button of `LCRMeter`. As momentary pushbuttons are not supported yet (please check `.dsp` code for more info), it's need to push it twice (leave it at 'off' state). Calibration is of key importance, as we do not have 2nd stereo line input to connect it as `Va1` meter (see article). Calibration latches amplitude and phase of currently selected frequency, and uses it as reference. Phase here includes all propagation delays between output and input, include codec, driver, JACK buffers, so calibration effectively cancels it all, but at current frequency only. Recalibrate when frequency is changed. Calibration requires open circuit (DUT disconnected).
 
-Now it's time to measure some electronic parts, and compare results with DT-9935 or other industrial LCR meter. Please report differences here.
+Now it's time to measure some electronic parts, and compare results with DT-9935 or other industrial LCR meter. Please report results here. **Discharge capacitor before connect!**
 
 Note that `.dsp` code also acts as documentation, and it is intended to user enhancements.
 
