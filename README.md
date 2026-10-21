@@ -24,7 +24,7 @@ Now it's time to use `Calib` button of `LCRMeter`:
 * Connect `Rref` resistor as DUT;
 * Press `Calib` again;
 * See UNCAL alarm goes out;
-* Dissonnect `Rref` resistor.
+* Disconnect `Rref` resistor.
 
 Calibration is of key importance, as we do not have 2nd stereo line input to connect it as `Va1` meter (see article). Calibration latches:
 * amplitude and
