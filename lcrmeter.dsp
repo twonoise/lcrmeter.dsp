@@ -21,8 +21,10 @@ nztz = _ <: select2(abs(_) > 0.001, 0, _);
 reset = (ba.time == 1); /* Will it roll over? FIXME */
 
 /* There is no button vs checkbox (aka lock button) difference yet. button() should have 'lv2:trigger' bit, while checkbox() should not. See https://github.com/falkTX/Carla/issues/2082  Meanwhile, use two button press. */
+change = reset | (f_num != f_num') | (tx_lvl != tx_lvl');
 calib = button ("[00] Calib");
-calibrated = rsff(reset | calib | (f_num != f_num') | (tx_lvl != tx_lvl'), calib : inv) :
+calibrated_opencircuit = rsff(change | ((calib == 1) & (calib' == 0)), calib'');
+calibrated_rref = rsff(change | calib, calib : inv) :
   inv : hbargraph("[01] UNCAL", 0, 1) : inv;
 
 /* Do not forget to check if frequency is adequate for current sample rate. */
@@ -38,10 +40,6 @@ Rref = R(r_num);
 /* Set alsamixer: PCM & Headphone: 100%, Line-in to min position when OVL still lit.
  * Then fine tune this to be just a bit below OVL goes out. */
 tx_lvl = hslider ("[05] Tx Level", 1.0, 0.75, 1.0, 0.01);
-
-/* Reference catch. Open the circuit and wait for mag & ang to settle, then calibrate. */
-ref_ampt  = ba.latch(calibrated);
-ref_phase = ba.latch(calibrated);
 
 /* Transmitter: goes to TX output, and to receiver heterodyne input */
 stimuliI = os.osccos(f);
@@ -64,10 +62,11 @@ flt = hslider ("[10] Filter", 0, 0, 2, 1) : int;  /* Three position button */
 video_filter      = _ <: select2(flt,     _, si.smooth(1 - 1e-3));
 video_filter_more = _ <: select2(flt > 1, _, si.smooth(1 - 1e-5));
 
-/* LCR Math. See Tek appnote 75W-28152-1 "Capacitance and Inductance Measurements..." */
+/* LCR Math. See Tek appnote 75W-28152-2 "Capacitance and Inductance Measurements..." */
 
 /* Internal (output) resistance is sum of: headphone output of codec, its output series resistor and capacitor, connectors, wires @ 1 kHz. It is important to measure it as precise as possible, then keep stable. Ohm, per mono wire. */
-Rout = 65.4;
+// Rout = 65.4;
+/* Now it's also calibrated, so calibration is two stage: open the circuit, button On, connect Rref, button Off. */
 
 /* This is unity by definition, as we scale it at calibration */
 Va1 = 1.0;     // Volts
@@ -75,8 +74,10 @@ Va1 = 1.0;     // Volts
 IS_DIFF = 2.0; // 1.0 for single-ended
 
 /* Equation 2 */
-Z(Va2,ang) = IS_DIFF * Va2 * (Rout + Rref) / sqrt(Va1^2 - 2.0 * Va1 * Va2 * cos(ang) + Va2^2) :
-  hbargraph("[12] Z, Ohm", 0, 1e6-1);
+Z(Va2,ang) = IS_DIFF * Va2 / sqrt(Va1^2 - 2.0 * Va1 * Va2 * cos(ang) + Va2^2) :
+  min(1e6-1) <: / (ba.latch(calibrated_rref) : max(ma.EPSILON)) :
+  * (Rref) :
+  hbargraph("[12] Z, Ohm", 0, 1e6);
 
 /* Equation 3 */
 A(Va2,ang) = ang - atan(-Va2 * sin(ang) / (Va1 - Va2 * cos(ang))) :
@@ -103,7 +104,6 @@ L(Z, A) = Z * sin(A) / (2.0 * ma.PI * f) :
 process =
   /* Test tone (aka stimuli) TX output, differential */
   ( stimuliI, -stimuliI : par(i, 2, * (tx_lvl)) : _, _),
-//   (-stimuliI * tx_lvl : _),
 
   (
     /* Differential input */
@@ -113,14 +113,14 @@ process =
     (_ <: rxI, rxQ <: rxMag, rxAng :
 
     /* De-embed ref magnitude */
-    (_ <: / (ref_ampt) : mag_meter ),
+    (_ <: / (ba.latch(calibrated_opencircuit) : max(ma.EPSILON)) : mag_meter ),
 
     /* De-embed ref phase, FIXME make it simpler */
-    (_ <: - (ref_phase) + (ma.PI * 3) : % (ma.PI * 2) : - (ma.PI) : ma.rad2deg : nztz : ph_meter : ma.deg2rad)
+    (_ <: - (ba.latch(calibrated_opencircuit)) + (ma.PI * 3) : % (ma.PI * 2) : - (ma.PI) : ma.rad2deg : nztz : ph_meter : ma.deg2rad)
 
     <: Z, A
 
-    <: Resr, C, L )
+    <: Resr, C, L)
 
     /* External single channel (i.e. non-differential) measurement of input,
      * like VU meter or Spectrum analyzer, can be connected here */
