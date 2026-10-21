@@ -4,7 +4,9 @@ lcrmeter.dsp is LCR Meter using Linux, sound card, LV2, and JACK
 
 While your bench top setup probably equipped with good LCR Meter already, still it's often not available like at field tests, or at remote sites. If regular desktop PC with Linux and sound card available, it can be used instead.
 
-Note that we will need blue stereo Line input connector. **It is always of great importance to select motherboards with such connector**. Sometimes it is possible to use `hdajackretask` magic to turn pink mono Mic connector into stereo Line In input (separate article, TODO). I also assume that you are familiar with `alsamixer`, `jack`, and `LV2` plugins using `Carla`.
+Note that we will need blue stereo Line input connector. **It is always of great importance to select motherboards with such connector**. Sometimes it is possible to use `hdajackretask` magic to turn pink mono Mic connector into stereo Line In input (separate article, TODO). Using retasked front pink input, together with phones output, allows to use only front panel connectors, which can be good, _but_, using mic input gives bad effects of drift values, due to AGC and non precision signal path for it inside of codec.
+
+I also assume that you are familiar with `alsamixer`, `jack`, and `LV2` plugins using `Carla`.
 
 Please read [^1] to get an idea how we can built it.
 
@@ -42,6 +44,16 @@ SNR and EMI
 I have used differential signalling. It doubles amplitude, halves input noise power of ADC, and greatly reduces EMI. That's why stereo input and output need.
 
 There is coherent receiver with 3 stage, 3.3 Hz BW low pass filters. Squeezing it even narrower, produces more ringing and longer settle time, but welcome to try. I also provide video filter. Note that it's switch button is three positional.
+
+Q & A
+=====
+Calibration drift
+-----------------
+If calibration not stays for long, and need to re-calibrate every few minutes, it is probably Mic input used. Please try to use Blue Stereo Line In input.
+
+TODO
+====
+Make all values well limited. It is important for any DSP to set strict boundaries of every signal.
 
 LICENSE
 =======
