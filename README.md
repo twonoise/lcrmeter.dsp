@@ -18,7 +18,20 @@ Then load `LCRMeter` plugin with Carla, and connect its stereo input and output 
 
 Next, using `alsamixer`, set PCM and Headphone level to 100%. At inputs tab (`F4`), set Line-in gain to minimal position when _OVL_ of `LCRMeter` still lit. Then, fine tune _TX Level_ of `LCRMeter` to be just a bit below of level when _OVL_ goes out. This gives most powerful output level, yet have non overloaded signal path.
 
-Now it's time to press `Calib` button of `LCRMeter`. As momentary pushbuttons are not supported yet (please check `.dsp` code for more info), it's need to push it twice (leave it at 'off' state). Calibration is of key importance, as we do not have 2nd stereo line input to connect it as `Va1` meter (see article). Calibration latches amplitude and phase of currently selected frequency, and uses it as reference. Phase here includes all propagation delays between output and input, include codec, driver, JACK buffers, so calibration effectively cancels it all, but at current frequency only. Recalibrate when frequency is changed. Calibration requires open circuit (DUT disconnected).
+Now it's time to use `Calib` button of `LCRMeter`:
+* Open the circuit (DUT disconnected);
+* Press `Calib` to be ON;
+* Connect `Rref` resistor as DUT;
+* Press `Calib` again;
+* See UNCAL alarm goes out;
+* Dissonnect `Rref` resistor.
+
+Calibration is of key importance, as we do not have 2nd stereo line input to connect it as `Va1` meter (see article). Calibration latches:
+* amplitude and
+* phase of currently selected frequency;
+* internal output resistance of sound card,
+
+and uses these values as a reference. Phase here includes all propagation delays between output and input, include codec, driver, JACK buffers. Calibration effectively cancels it all, but at current frequency only. Recalibrate when frequency is changed.
 
 Now it's time to measure some electronic parts, and compare results with DT-9935 or other industrial LCR meter. Please report results here. **Discharge capacitor before connect!**
 
