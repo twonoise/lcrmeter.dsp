@@ -71,6 +71,7 @@ Line Out vs HP Out
 If headphone output is not available, stereo lightgreen Line Out can be used. Do not forget to enable it with `alsamixer`. 
 * As it have increased internal output resistance, there is better not to use `Rref` less than 1k Ohm. There is also low frequency limit, precision will be degraded below 200 Hz. Values are depends on codec and motherboard; ALC898 output resistance specs are: typ. 2 Ohm front headphone, 200 Ohm line out.
 * It also have reduced series capacitance. While it is acceptable for regular use with 47k, min. 10k Ohms load, it gives noticeable phase shift at heavier loads like 1k Ohm, and this phase shift is _can not be cancelled by calibration_, as it is load dependent. It will be in order of 5 deg. at 1k Ohm and 100 Hz, you may note it after calibration (`Ang, Deg` value). Note that it is capacitive yet positive sign: it is due to it is _series_ capacitance.
+  * At single frequency point, it probably can be cancelled with some extra series inductance.
 
 TODO
 ====
