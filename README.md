@@ -46,7 +46,7 @@ and uses these values as a reference. Phase here includes all propagation delays
 
 Now it's time to measure some electronic parts, and compare results with DT-9935 or other industrial LCR meter. Please report results here. **Discharge capacitor before connect!**
 
-Note that `.dsp` code also acts as documentation, and it is intended to user enhancements.
+Note that `.dsp` code also acts as documentation, and it is _intended_ to user enhancements. You can see its system diagram at [faustide.grame.fr](https://faustide.grame.fr/). Put our code there, run it, find `Diagram` tab. Dark blue submodules are clickable.
 
 SNR and EMI
 -----------
