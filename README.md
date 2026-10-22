@@ -25,7 +25,7 @@ Compile & install the `LCRMeter` code, as shown at its head.
 
 Then load `LCRMeter` plugin with Carla, and connect its stereo input and output to system sound output and input, either with Carla `Patchbay` tab, or `Graph` of `QJackCtl`. Other **plugin hosts** are can be used, when you are familiar with them.
 
-Next, using `alsamixer`, set PCM and Headphone level to 100%. At inputs tab (`F4`), set Line-in gain to minimal position when _OVL_ of `LCRMeter` still lit. Then, fine tune _TX Level_ of `LCRMeter` to be just a bit below of level when _OVL_ goes out. This gives most powerful output level, yet have non overloaded signal path.
+Next, using `alsamixer`, set Master, PCM and Headphone level to 100%. At inputs tab (`F4`), set Line-in gain to minimal position when _OVL_ of `LCRMeter` still lit. Then, fine tune _TX Level_ of `LCRMeter` to be just a bit below of level when _OVL_ goes out. This gives most powerful output level, yet have non overloaded signal path.
 
 <img src="img/alsamixer.png" />
 
@@ -59,6 +59,10 @@ Q & A
 Calibration drift
 -----------------
 If calibration not stays for long, and need to re-calibrate every few minutes, it is probably Mic input used. Please try to use Blue Stereo Line In input.
+
+Line Out vs HP Out
+------------------
+If headphone output is not available, stereo lightgreen Line Out can be used. Do not forget to enable it with `alsamixer`. As it have increased internal output resistance, like 200 Ohm per wire, there is better not to use `Rref` less than 1k Ohm. There is also low frequency limit, precision may be degraded at 10 Hz. (Depends on codec and motherboard).
 
 TODO
 ====
