@@ -7,11 +7,7 @@ lcrmeter.dsp is LCR Meter using Linux, sound card, LV2, and JACK
 
 While your bench top setup probably equipped with good LCR Meter already, still it's often not available like at field tests, or at remote sites. If regular desktop PC with Linux and sound card available, it can be used instead.
 
-Note that we will need blue stereo Line input connector. **It is always of great importance to select motherboards with such connector**. Sometimes it is possible to use `hdajackretask` magic to turn pink mono Mic connector into stereo Line In input (separate article, TODO):
-
-<img src="img/hdajackretask.png" />
-
-Using retasked front pink input, together with phones output, allows to use only front panel connectors, which can be good, _but_, using mic input gives bad effects of drift values, due to AGC and non precision signal path for it inside of codec.
+Note that we will need blue stereo Line input connector. **It is always of great importance to select motherboards with such connector**. 
 
 I also assume that you are familiar with `alsamixer`, `jack`, and `LV2` plugins using `Carla`.
 
@@ -60,9 +56,19 @@ Calibration drift
 -----------------
 If calibration not stays for long, and need to re-calibrate every few minutes, it is probably Mic input used. Please try to use Blue Stereo Line In input.
 
+Mic In vs Line In
+-----------------
+Sometimes it is possible to use `hdajackretask` magic to turn pink mono Mic connector into stereo Line In input (separate article, TODO):
+
+<img src="img/hdajackretask.png" />
+
+Using retasked front pink input, together with phones output, allows to use only front panel connectors, which can be good, _but_, using mic input gives bad effects of drift values, due to AGC and non precision signal path for it inside of codec.
+
 Line Out vs HP Out
 ------------------
-If headphone output is not available, stereo lightgreen Line Out can be used. Do not forget to enable it with `alsamixer`. As it have increased internal output resistance, there is better not to use `Rref` less than 1k Ohm. There is also low frequency limit, precision may be degraded at 10 Hz. Values are depends on codec and motherboard; ALC898 output resistance specs are: typ. 2 Ohm front headphone, 200 Ohm line out.
+If headphone output is not available, stereo lightgreen Line Out can be used. Do not forget to enable it with `alsamixer`. 
+* As it have increased internal output resistance, there is better not to use `Rref` less than 1k Ohm. There is also low frequency limit, precision will be degraded below 200 Hz. Values are depends on codec and motherboard; ALC898 output resistance specs are: typ. 2 Ohm front headphone, 200 Ohm line out.
+* It also have reduced series capacitance. While it is acceptable for regular use with 47k, min. 10k Ohms load, it gives noticeable phase shift at heavier loads like 1k Ohm, and this phase shift is _can not be cancelled by calibration_, as it is load dependent. It will be in order of 5 deg. at 1k Ohm and 100 Hz, you may note it after calibration (`Ang, Deg` value). Note that it is capacitive yet positive sign: it is due to it is _series_ capacitance.
 
 TODO
 ====
