@@ -62,7 +62,7 @@ If calibration not stays for long, and need to re-calibrate every few minutes, i
 
 Line Out vs HP Out
 ------------------
-If headphone output is not available, stereo lightgreen Line Out can be used. Do not forget to enable it with `alsamixer`. As it have increased internal output resistance, like 200 Ohm per wire, there is better not to use `Rref` less than 1k Ohm. There is also low frequency limit, precision may be degraded at 10 Hz. (Depends on codec and motherboard).
+If headphone output is not available, stereo lightgreen Line Out can be used. Do not forget to enable it with `alsamixer`. As it have increased internal output resistance, there is better not to use `Rref` less than 1k Ohm. There is also low frequency limit, precision may be degraded at 10 Hz. Values are depends on codec and motherboard; ALC898 output resistance specs are: typ. 2 Ohm front headphone, 200 Ohm line out.
 
 TODO
 ====
