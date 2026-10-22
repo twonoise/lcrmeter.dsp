@@ -27,8 +27,10 @@ Next, using `alsamixer`, set Master, PCM and Headphone level to 100%. At inputs 
 
 Now it's time to use `Calib` button of `LCRMeter`:
 * Open the circuit (DUT disconnected);
+* Wait few seconds;
 * Press `Calib` to be ON;
 * Connect `Rref` resistor as DUT;
+* Wait few more seconds;
 * Press `Calib` again;
 * See UNCAL alarm goes out;
 * Disconnect `Rref` resistor.
