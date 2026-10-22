@@ -73,6 +73,10 @@ If headphone output is not available, stereo lightgreen Line Out can be used. Do
 * It also have reduced series capacitance. While it is acceptable for regular use with 47k, min. 10k Ohms load, it gives noticeable phase shift at heavier loads like 1k Ohm, and this phase shift is _can not be cancelled by calibration_, as it is load dependent. It will be in order of 5 deg. at 1k Ohm and 100 Hz, you may note it after calibration (`Ang, Deg` value). Note that it is capacitive yet positive sign: it is due to it is _series_ capacitance.
   * At single frequency point, it probably can be cancelled with some extra series inductance.
 
+Bugs
+====
+* Small values (below ~0.001) are displayed incorrectly. Should be scaled with `milli` or `micro` suffix, like `k` or `M` with large ones. This is planned. This is about intermediate values, not the final result. Tooltip shows correct value.
+
 TODO
 ====
 Make all values well limited. It is important for any DSP to set strict boundaries of every signal.
