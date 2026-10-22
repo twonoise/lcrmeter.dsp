@@ -1,10 +1,17 @@
 # lcrmeter.dsp
+
+<img src="img/lcrmeter.png" />
+
 lcrmeter.dsp is LCR Meter using Linux, sound card, LV2, and JACK
 ---
 
 While your bench top setup probably equipped with good LCR Meter already, still it's often not available like at field tests, or at remote sites. If regular desktop PC with Linux and sound card available, it can be used instead.
 
-Note that we will need blue stereo Line input connector. **It is always of great importance to select motherboards with such connector**. Sometimes it is possible to use `hdajackretask` magic to turn pink mono Mic connector into stereo Line In input (separate article, TODO). Using retasked front pink input, together with phones output, allows to use only front panel connectors, which can be good, _but_, using mic input gives bad effects of drift values, due to AGC and non precision signal path for it inside of codec.
+Note that we will need blue stereo Line input connector. **It is always of great importance to select motherboards with such connector**. Sometimes it is possible to use `hdajackretask` magic to turn pink mono Mic connector into stereo Line In input (separate article, TODO):
+
+<img src="img/hdajackretask.png" />
+
+Using retasked front pink input, together with phones output, allows to use only front panel connectors, which can be good, _but_, using mic input gives bad effects of drift values, due to AGC and non precision signal path for it inside of codec.
 
 I also assume that you are familiar with `alsamixer`, `jack`, and `LV2` plugins using `Carla`.
 
@@ -19,6 +26,8 @@ Compile & install the `LCRMeter` code, as shown at its head.
 Then load `LCRMeter` plugin with Carla, and connect its stereo input and output to system sound output and input, either with Carla `Patchbay` tab, or `Graph` of `QJackCtl`. Other **plugin hosts** are can be used, when you are familiar with them.
 
 Next, using `alsamixer`, set PCM and Headphone level to 100%. At inputs tab (`F4`), set Line-in gain to minimal position when _OVL_ of `LCRMeter` still lit. Then, fine tune _TX Level_ of `LCRMeter` to be just a bit below of level when _OVL_ goes out. This gives most powerful output level, yet have non overloaded signal path.
+
+<img src="img/alsamixer.png" />
 
 Now it's time to use `Calib` button of `LCRMeter`:
 * Open the circuit (DUT disconnected);
