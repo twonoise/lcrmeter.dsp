@@ -44,7 +44,10 @@ and uses these values as a reference. Phase here includes all propagation delays
 
 Now it's time to measure some electronic parts, and compare results with DT-9935 or other industrial LCR meter. Please report results here. **Discharge capacitor before connect!**
 
-Note that `.dsp` code also acts as documentation, and it is _intended_ to user enhancements. You can see its system diagram at [faustide.grame.fr](https://faustide.grame.fr/). Put our code there, run it, find `Diagram` tab. Dark blue submodules are clickable.
+Note that `.dsp` code also acts as documentation, and it is _intended_ to user enhancements: 
+* _Example_. Want a cat eye as magnitude meter? Replace `mag_meter` limits from `0.0, 9.999` to `0.0, 1.0`.
+
+You can see the system diagram at [faustide.grame.fr](https://faustide.grame.fr/). Put our code there, run it, find `Diagram` tab. Dark blue submodules are clickable.
 
 SNR and EMI
 -----------
@@ -66,7 +69,7 @@ Sometimes it is possible to use `hdajackretask` magic to turn pink mono Mic conn
 
 Using retasked front pink input, together with phones output, allows to use only front panel connectors, which can be good, _but_, using mic input gives bad effects of drift values, due to AGC and non precision signal path for it inside of codec.
 
-Input (parallel) resistance of such mic input will be way worse (lower) than blue Line In, thus it is rarely possible to have `Rref` above ~10 kOhm.
+Input (parallel) resistance of such mic input will be way worse (lower) than blue Line In, thus it is rarely possible to have `Rref` above ~10k Ohm.
 
 Line Out vs HP Out
 ------------------
