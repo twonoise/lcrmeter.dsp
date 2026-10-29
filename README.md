@@ -67,7 +67,7 @@ Sometimes it is possible to use `hdajackretask` magic to turn pink mono Mic conn
 
 <img src="img/alsamixer.png" />
 
-Using retasked front pink input, together with phones output, allows to use only front panel connectors, which can be good, _but_, using mic input gives bad effects of drift values, due to AGC and non precision signal path for it inside of codec.
+Using retasked front pink input, together with phones output, allows to use only front panel connectors, which is great for schools or education, _but_, using mic input gives bad effects of drift values, due to AGC and non precision signal path for it inside of codec.
 
 Input (parallel) resistance of such mic input will be way worse (lower) than blue Line In, thus it is rarely possible to have `Rref` above ~10k Ohm.
 
