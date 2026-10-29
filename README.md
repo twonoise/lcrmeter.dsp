@@ -11,7 +11,7 @@ Note that we will need blue stereo Line input connector. **It is always of great
 
 I also assume that you are familiar with `alsamixer`, `jack`, and `LV2` plugins using `Carla`.
 
-Please read [^1] to get an idea how we can built it.
+Please read [^1] to get an idea how we can built our meter unit.
 
 My LCR Meter uses differential signalling. Hardware required is two resistors (let's start at _1k Ohm_ value) between Line-in and Headphone out: `OutL [1k] InL`, `OutR [1k] InR`. Connect DUT (device under test) to inputs: `InL [DUT] InR` (later; now we leave it open circuit).
 
@@ -22,8 +22,6 @@ Compile & install the `LCRMeter` code, as shown at its head.
 Then load `LCRMeter` plugin with Carla, and connect its stereo input and output to system sound output and input, either with Carla `Patchbay` tab, or `Graph` of `QJackCtl`. Other **plugin hosts** are can be used, when you are familiar with them.
 
 Next, using `alsamixer`, set Master, PCM and Headphone level to 100%. At inputs tab (`F4`), set Line-in gain to minimal position when _OVL_ of `LCRMeter` still lit. Then, fine tune _TX Level_ of `LCRMeter` to be just a bit below of level when _OVL_ goes out. This gives most powerful output level, yet have non overloaded signal path.
-
-<img src="img/alsamixer.png" />
 
 Now it's time to use `Calib` button of `LCRMeter`:
 * Open the circuit (DUT disconnected);
@@ -66,6 +64,8 @@ Mic In vs Line In
 Sometimes it is possible to use `hdajackretask` magic to turn pink mono Mic connector into stereo Line In input (separate article, TODO):
 
 <img src="img/hdajackretask.png" />
+
+<img src="img/alsamixer.png" />
 
 Using retasked front pink input, together with phones output, allows to use only front panel connectors, which can be good, _but_, using mic input gives bad effects of drift values, due to AGC and non precision signal path for it inside of codec.
 
