@@ -15,7 +15,7 @@ Please read [^1] to get an idea how we can built our meter unit. Thanks to Tektr
 
 My LCR Meter uses differential signalling. Hardware required is two resistors (let's start at _1k Ohm_ value) between Line-in and Headphone out: `OutL [1k] InL`, `OutR [1k] InR`. Connect DUT (device under test) to inputs: `InL [DUT] InR` (later; now we leave it open circuit).
 
-To use this `.dsp` code, install [carla](https://github.com/twonoise/carla-patches) and `faust`. **Note** that this Carla tree is equipped with display buttons and meters, not merged to main tree yet.
+To use this `.dsp` code, install [carla](https://github.com/twonoise/carla-patches) and `faust`. **Note** that this Carla tree is equipped with display buttons and meters, not merged to main tree yet. To get larger displays: `QT_SCALE_FACTOR=2 carla`.
 
 Compile & install the `LCRMeter` code, as shown at its head.
 
