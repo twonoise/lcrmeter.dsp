@@ -5,13 +5,13 @@
 lcrmeter.dsp is LCR Meter using Linux, sound card, LV2, and JACK
 ---
 
-While your bench top setup probably equipped with good LCR Meter already, still it's often not available like at field tests, or at remote sites. If regular desktop PC with Linux and sound card available, it can be used instead.
+While your bench top setup probably equipped with good LCR Meter already, still it's often not available like at field tests, or at remote sites. If regular desktop PC with Linux and sound card available, it can be used instead. Another motivation is to rise interest to learn how measurements are made, and to see and feel in your hands what limits its precision and range. 
 
 Note that we will need blue stereo Line input connector. **It is always of great importance to select motherboards with such connector**. 
 
 I also assume that you are familiar with `alsamixer`, `jack`, and `LV2` plugins using `Carla`.
 
-Please read [^1] to get an idea how we can built our meter unit.
+Please read [^1] to get an idea how we can built our meter unit. Thanks to Tektronix for sharing their efforts!
 
 My LCR Meter uses differential signalling. Hardware required is two resistors (let's start at _1k Ohm_ value) between Line-in and Headphone out: `OutL [1k] InL`, `OutR [1k] InR`. Connect DUT (device under test) to inputs: `InL [DUT] InR` (later; now we leave it open circuit).
 
@@ -93,4 +93,4 @@ This manual for `LCRMeter`, together with its inlined pictures, are licensed und
 `LCRMeter` is MIT license.
 
 
-[^1]: Tek appnote 75W-28152-2 "Capacitance and Inductance Measurements Using an Oscilloscope and a Function Generator" Rev. 02.2022
+[^1]: [Tek appnote 75W-28152-2 "Capacitance and Inductance Measurements Using an Oscilloscope and a Function Generator" Rev. 02.2022](https://map-assets.tek.com/map-assets/asean/PDF/75W281522CapacitanceandInductanceMeasurementsOscilloscopeFunctionGeneratorApplicationNote032023.pdf)
