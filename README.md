@@ -7,7 +7,9 @@ lcrmeter.dsp is LCR Meter using Linux, sound card, LV2, and JACK
 
 While your bench top setup probably equipped with good LCR Meter already, still it's often not available like at field tests, or at remote sites. If regular desktop PC with Linux and sound card available, it can be used instead. Another motivation is to rise interest to learn how measurements are made, and to see and feel in your hands what limits its precision and range. 
 
-Note that we will need blue stereo Line input connector. **It is always of great importance to select motherboards with such connector**. 
+Note that we will need blue stereo Line input connector. 
+> [!Important]
+> **It is always of great importance to select motherboards with Blue stereo Line-In connector**. 
 
 I also assume that you are familiar with `alsamixer`, `jack`, and `LV2` plugins using `Carla`.
 
@@ -40,7 +42,10 @@ Calibration is of key importance, as we do not have 2nd stereo line input to con
 
 and uses these values as a reference. Phase here includes all propagation delays between output and input, include codec, driver, JACK buffers. Calibration effectively cancels it all, but at current frequency only. Recalibrate when frequency is changed.
 
-Now it's time to measure some electronic parts, and compare results with DT-9935 or other industrial LCR meter. Please report results here. **Discharge capacitor before connect!**
+Now it's time to measure some electronic parts, and compare results with DT-9935 or other industrial LCR meter. Please report results here.
+> [!WARNING]
+> **Discharge capacitor before connect!**
+
 
 Note that `.dsp` code also acts as documentation, and it is _intended_ to user enhancements: 
 * _Example_. Want a cat eye as magnitude meter? Replace `mag_meter` limits from `0.0, 9.999` to `0.0, 1.0`.
