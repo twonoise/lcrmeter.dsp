@@ -2,7 +2,7 @@
 
 <img src="img/lcrmeter.png" />
 
-lcrmeter.dsp is LCR Meter using Linux, sound card, LV2, and JACK
+lcrmeter.dsp is LCR Meter using Linux, sound card, LV2, Faust, and JACK
 ---
 
 While your bench top setup probably equipped with good LCR Meter already, still it's often not available like at field tests, or at remote sites. If regular desktop PC with Linux and sound card available, it can be used instead. Another motivation is to rise interest to learn how measurements are made, and to see and feel in your hands what limits its precision and range. 
