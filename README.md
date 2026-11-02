@@ -56,12 +56,15 @@ SNR and EMI
 -----------
 I have used differential signalling. It doubles amplitude, halves input noise power of ADC, and greatly reduces EMI. That's why stereo input and output need. 
 
-Btw, one may note that ground wire of connectors is not used, which looks somewhat irregular. Yes, ground not need for measurements, but it is better to still use it to connect to some metal piece at work area. Touch it with finger before touching I/O will save codec from ESD damage.
-
 There is coherent receiver with 3 stage, 3.3 Hz BW low pass filters. Squeezing it even narrower, produces more ringing and longer settle time, but welcome to try. I also provide video filter. Note that it's switch button is three positional.
 
 Q & A
 =====
+
+Ground wire
+-----------
+One may note that ground wire of connectors is not used, which looks somewhat irregular. Yes, ground not need for measurements, but it is better to still use it to connect to some metal piece at work area. Touch it with finger before touching I/O will save codec from ESD damage.
+
 Calibration drift
 -----------------
 If calibration not stays for long, and need to re-calibrate every few minutes, it is probably Mic input used. Please try to use Blue Stereo Line In input.
