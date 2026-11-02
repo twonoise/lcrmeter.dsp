@@ -40,7 +40,7 @@ Calibration is of key importance, as we do not have 2nd stereo line input to con
 * phase of currently selected frequency;
 * internal output resistance of sound card,
 
-and uses these values as a reference. Phase here includes all propagation delays between output and input, include codec, driver, JACK buffers. Calibration effectively cancels it all, but at current frequency only. Recalibrate when frequency is changed.
+and uses these values as a reference. Phase here includes possible inversion due to swap of L, R wires, as well as, all propagation delays between output and input, include codec, driver, JACK buffers. Calibration effectively cancels it all, but at current frequency only. Recalibrate when frequency is changed.
 
 Now it's time to measure some electronic parts, and compare results with DT-9935 or other industrial LCR meter. Please report results here.
 > [!WARNING]
