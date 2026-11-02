@@ -27,12 +27,12 @@ calib_rref = rsff(change | calib, calib : inv) :
 /* Do not forget to check if frequency is adequate for current sample rate. */
 F(x) = rdtable(waveform{10, 20, 50, 100, 200, 500, 1000, 2000, 5000, 10000, 20000}, x);
 f_num = hslider ("[02] Freq", 3, 0, 10, 1) : int;
-f = F(f_num) : hbargraph("[03] Freq,Hz [unit:Hz]", 1.0, 1e6);
+f = F(f_num) : hbargraph("[03] Freq Hz [unit:Hz]", 1.0, 1e6);
 
 /* Two precision, low inductance series resistors. Ohm, per wire. */
 R(x) = rdtable(waveform{100, 1e3, 10e3, 100e3}, x);
 r_num = hslider ("[04] Rref", 1, 0, 3, 1) : int;
-Rref = R(r_num) : hbargraph("[05] Rref,Ohm [unit:Ohm]", 1.0, 1e6);
+Rref = R(r_num) : hbargraph("[05] Rref Ohm [unit:Ohm]", 1.0, 100e3);
 
 /* Set alsamixer: PCM, Master & Headphone: 100%, Line-in to min position when OVL still lit.
  * Then fine tune this to be just a bit below OVL goes out. */
@@ -46,14 +46,14 @@ stimuliQ = os.oscsin(f);
 rxI(x) = x * stimuliI : fi.lowpass(3, 3.3) : video_filter : video_filter_more;
 rxQ(x) = x * stimuliQ : fi.lowpass(3, 3.3) : video_filter : video_filter_more;
 rxMag(i, q) = sqrt(i^2 + q^2) * 2.0
-  /* Loss of signal, or Overload */
-  <: _,(((< (0.001)) | (> (1.001))) : hbargraph("[07] LOS,OVL", 0, 1)) : attach;
+  /* Normal = 0, Loss of signal = 1 (Warning), Overload = 2 (Alarm) */
+  <: _,(((< (0.001)) + (> (1.001)) * 2) : hbargraph("[07] LOS OVL", 0, 2)) : attach;
 rxAng(i, q) = atan2(i, q);
 
 /* Meters after calibration */
 /* Normalized voltage, for differential setup it show ~half (single-ended) voltage. */
-mag_meter = hbargraph("[08] Mag,Volts [unit:V]", 0.0, 9.999);
-ph_meter  = hbargraph("[09] Ang,Deg [unit:Deg]", -180, 180);
+mag_meter = hbargraph("[08] Mag Volts [unit:V]", 0.0, 9.999);
+ph_meter  = hbargraph("[09] Ang Deg [unit:Deg]", -180, 180);
 
 /* Visual filter. Note that it is not changes BW nor SNR nor Sensitivity */
 flt = hslider ("[10] Filter", 0, 0, 2, 1) : int;  /* Three position button */
@@ -75,27 +75,28 @@ IS_DIFF = 2.0; // 1.0 for single-ended
 Z(Va2,ang) = IS_DIFF * Va2 / sqrt(Va1^2 - 2.0 * Va1 * Va2 * cos(ang) + Va2^2) :
   min(1e9) <: / (ba.latch(calib_rref) : max(ma.EPSILON)) :
   * (Rref) :
-  hbargraph("[11] Z,Ohm [unit:Ohm]", 0.0, 1e7);
+  hbargraph("[11] Z Ohm [unit:Ohm]", 0.0, 1e7);
 
 /* Equation 3 */
 A(Va2,ang) = ang - atan(-Va2 * sin(ang) / (Va1 - Va2 * cos(ang))) :
-  (_ <: _,(ma.rad2deg : hbargraph("[12] A,Deg [unit:Deg]", -180, 180)) : attach);
+  (_ <: _,(ma.rad2deg : hbargraph("[12] A Deg [unit:Deg]", -180, 180) :
+  /* Resistive = 0; Reactive = 1 (Info); Resonant = 2 (Alarm), which means DUT isn't single unit, but some circuit or tank; or, measure beyond rezonant frequency. */
+  abs <: ((> (5.0)) + (> (90.0))) : hbargraph("[13] REACTIVE", 0, 2)) :
+  attach);
 
 /* Equation 4 or 6 */
 Resr(Z, A) = Z * cos(A) :
-  hbargraph("[14] Resr,Ohm [unit:Ohm]", -1e6, 1e7) :
-  /* If DUT isn't single unit, but some circuit or tank; or, measure beyond rezonant frequency. */
-  (_ < 0.0) : hbargraph("[13] RESONANT", 0, 1);
+  hbargraph("[14] Resr Ohm [unit:Ohm]", -1e6, 1e7);
 
-is_reactive = (abs : ma.rad2deg > 5.0) : hbargraph("[15] REACTIVE", 0, 1);
+is_good_reactive = (abs : ma.rad2deg <: (> (5.0)) * (< (90.0)));
 
 /* Equation 5 */
 C(Z, A) = -1.0 / (2.0 * ma.PI * f * Z * sin(A)) :
-  * (is_reactive(A)) : hbargraph("[16] C, F [unit:F]", -1.0, 9.999);
+  * (is_good_reactive(A)) : hbargraph("[15] C, F [unit:F]", -1.0, 9.9999);
 
 /* Equation 7 */
 L(Z, A) = Z * sin(A) / (2.0 * ma.PI * f) :
-  * (is_reactive(A)) : hbargraph("[17] L, H [unit:H]", -1.0, 99.99);
+  * (is_good_reactive(A)) : hbargraph("[16] L, H [unit:H]", -1.0, 99.999);
 
 process =
   /* Test tone TX output, differential */
