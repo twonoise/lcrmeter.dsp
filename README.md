@@ -88,6 +88,15 @@ If headphone output is not available, stereo lightgreen Line Out can be used. Do
 * It also have reduced series capacitance. While it is acceptable for regular use with 47k, min. 10k Ohms load, it gives noticeable phase shift at heavier loads like 1k Ohm, and this phase shift is _can not be cancelled by calibration_, as it is load (DUT) dependent. It will be in order of 5 deg. at 1k Ohm and 100 Hz, you may note it after calibration, using `Rref` as DUT (`Ang, Deg` value). Note that it is capacitive yet positive sign: it is due to it is _series_ capacitance.
   * At single frequency point, it probably can be cancelled with some extra series inductance.
 
+How to calibrate at several frequencies?
+---------------------------------------
+Current `Faust` does not support arrays, or I can't figure out how to use it; so, calibration is lost at frequency change. You may use several instances of our Meter, using `Carla`:
+* Calibrate at one frequency, as usual.
+* Turn off TX power with rightmost `Volume` knob, either witl `Left click`, or, `Mouse hover` + `Space`; or, use crossed Speaker icon at toolbar. Knob should be 'Mute' labeled now.
+* Add another LCRMeter. Connect I/O to same system ports, i.e., in parallel to Meter we already have.
+* Switch it to another frequency, then calibrate.
+* Now we able to hot switch frequency with `Volume` knobs.
+
 Bugs
 ====
 * <del>Small values (below ~0.001) are displayed incorrectly. Should be scaled with `milli` or `micro` suffix, like `k` or `M` with large ones. This is planned. This is about intermediate values, not the final result. Tooltip shows correct value.</del> Fixed.
