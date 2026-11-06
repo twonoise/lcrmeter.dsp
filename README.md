@@ -112,9 +112,14 @@ At other side, we need some receiver which can plot something. I will use [Jasmi
 
     jasmine-sa LCRMeter:Thru -h 16,16384  # or ... -h 16,65536,12
 
+Log frequency scale is needed to better represent reactive components (DUTs) behaviour. You may also need to reduce Spectrum analyzer reference bandwidth (RBW, `F3`) and/or to use video filter (VBW, `F4`), as well as, stretch Y axis twice (`F7`) and/or shift it (`F8`). Then connect various DUTs, and compare result with plots at Tektronix article, to guess how to better measure it (select `Rref` and frequency for LCR Meter), as well as, find some impurities in DUTs, like resonances.
+
 <img src="img/jasmine-sa_log_scale.png" />
 
-Log frequency scale is needed to better represent reactive components (DUTs) behaviour. You may also need to reduce Spectrum analyzer reference bandwidth (RBW, `F3`) and/or to use video filter (VBW, `F4`), as well as, stretch Y axis twice (`F7`) and/or shift it (`F8`). Then connect various DUTs, and compare result with plots at Tektronix article, to guess how to better measure it (select `Rref` and frequency for LCR Meter), as well as, find some impurities in DUTs, like resonances.
+_On photo:_ Ref level, and three DUTs, using 1k Ohm `Rref`: 
+* Rref itself used as DUT;
+* 10 mH, high ESR inductor;
+* 220 uF capatitor, connected with way too long probes (~4 ft each).
 
 Bugs
 ====
