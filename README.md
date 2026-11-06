@@ -97,6 +97,25 @@ Current `Faust` does not support arrays, or I can't figure out how to use it; so
 * Switch it to another frequency, then calibrate.
 * Now we able to hot switch frequency with `Volume` knobs.
 
+What's next
+-----------
+
+Same not-so-complicated hardware can be used for way more things, along LCR Meter. Example is Bode plots (amplitude frequency responce graphs) of same DUTs (measured with LCR Meter), as well as cables, transformers, and other passive components.
+
+Sadly, [JACK tools](https://github.com/jackaudio/jack-example-tools/tree/main/example-clients) are does not provides code which records and plays at same time (or at least play only). As this is fragile realtime component, it can not be created by me. So direct Bode plots, with coherent frequency stimulus and receiver, as LCR Meter have, are impossible in its most simple form. Faust currently does not provide simple Graph primitive, as this is not defined at sound plugins. So only we can do to keep it simple and understandeable, is to use incoherent measurements (more precisely - just _estimations_) plots, which is done with wideband, max possible power white noise generator. Dynamic range and sensitivity are both way too worse than coherent method. Well, let's try.
+
+One may note that our Meter provides two extra white noise outputs. Connect these, instead of regular outputs of LCR Meter, to system output:
+
+<img src="img/bode_plot_setup.png" />
+
+At other side, we need some receiver which can plot something. I will use [Jasmine spectrum analyzer](https://github.com/twonoise/jasmine-sa). We will need experimental `Log X Scale` mode of it:
+
+    jasmine-sa LCRMeter:Thru -h 16,16384  # or ... -h 16,65536,12
+
+<img src="img/jasmine-sa_log_scale.png" />
+
+Log frequency scale is needed to better represent reactive components (DUTs) behaviour. You may also need to reduce Spectrum analyzer reference bandwidth (RBW, `F3`) and/or to use video filter (VBW, `F4`), as well as, stretch Y axis twice (`F7`) and/or shift it (`F8`). Then connect various DUTs, and compare result with plots at Tektronix article, to guess how to better measure it (select `Rref` and frequency for LCR Meter), as well as, find some impurities in DUTs, like resonances.
+
 Bugs
 ====
 * <del>Small values (below ~0.001) are displayed incorrectly. Should be scaled with `milli` or `micro` suffix, like `k` or `M` with large ones. This is planned. This is about intermediate values, not the final result. Tooltip shows correct value.</del> Fixed.
