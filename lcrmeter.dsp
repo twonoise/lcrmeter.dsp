@@ -1,4 +1,4 @@
-// faust2lv2 -double lcrmeter.dsp  &&  sed -i -e 's/in0/In/g' -e 's/in1/InInv/g' -e 's/out0/Out/g' -e 's/out1/OutInv/g' -e 's/out2/Resr_Ohm/g' -e 's/out3/C_uF/g' -e 's/out4/L_mH/g' -e '/lv2:name "Freq/a\\tlv2:portProperty lv2:integer ;' -e '/lv2:name "Rref/a\\tlv2:portProperty lv2:integer ;' -e '/lv2:name "Filter/a\\tlv2:portProperty lv2:integer ;' -e 's/out4/L_mH/g' -e '/lv2:name "LOS/a\\tlv2:portProperty lv2:integer ;' -e 's/out5/ToVUmeter/g' -e '/lv2:name "LOS/a\\tlv2:portProperty lv2:integer ;' -e '/lv2:name "OVL/a\\tlv2:portProperty lv2:integer ;' -e '/lv2:name "UNCAL/a\\tlv2:portProperty lv2:integer ;' -e '/lv2:name "RESONANT/a\\tlv2:portProperty lv2:integer ;' -e '/lv2:name "REACTIVE/a\\tlv2:portProperty lv2:integer ;' lcrmeter.lv2/lcrmeter.ttl  &&  cp -R lcrmeter.lv2/ /usr/local/lib/lv2/
+// faust2lv2 -double lcrmeter.dsp  &&  sed -i -e 's/in0/In/g' -e 's/in1/InInv/g' -e 's/out0/Out/g' -e 's/out1/OutInv/g' -e 's/out2/Resr_Ohm/g' -e 's/out3/C_uF/g' -e 's/out4/L_mH/g' -e '/lv2:name "Freq/a\\tlv2:portProperty lv2:integer ;' -e '/lv2:name "Rref/a\\tlv2:portProperty lv2:integer ;' -e '/lv2:name "Filter/a\\tlv2:portProperty lv2:integer ;' -e 's/out4/L_mH/g' -e '/lv2:name "LOS/a\\tlv2:portProperty lv2:integer ;' -e 's/out5/Thru/g' -e 's/out6/NoiseOut/g' -e 's/out7/NoiseOutInv/g' -e '/lv2:name "LOS/a\\tlv2:portProperty lv2:integer ;' -e '/lv2:name "OVL/a\\tlv2:portProperty lv2:integer ;' -e '/lv2:name "UNCAL/a\\tlv2:portProperty lv2:integer ;' -e '/lv2:name "RESONANT/a\\tlv2:portProperty lv2:integer ;' -e '/lv2:name "REACTIVE/a\\tlv2:portProperty lv2:integer ;' lcrmeter.lv2/lcrmeter.ttl  &&  cp -R lcrmeter.lv2/ /usr/local/lib/lv2/
 
 declare name "LCRMeter"; // No spaces for better JACK port names.
 declare version "2026";
@@ -100,7 +100,7 @@ L(Z, A) = Z * sin(A) / (2.0 * ma.PI * f) :
 
 process =
   /* Test tone TX output, differential */
-  ( stimuliI, -stimuliI : par(i, 2, * (tx_lvl)) : _, _),
+  ( stimuliI <: * (tx_lvl), * (-tx_lvl) : _, _),
 
   (
     /* Differential input */
@@ -119,8 +119,12 @@ process =
 
     <: Resr, C, L)
 
-    /* External single channel (i.e. non-differential) measurement of input,
-     * like VU meter or Spectrum analyzer, can be connected here */
+    /* Thru output (after diff-to-single ended conversion).
+     * VU meter or Spectrum analyzer can be connected here */
     , _
-  )
+  ),
+
+  /* Noise source for Bode plots */
+  ( no.noise <: * (1), * (-1) : _, _)
+
 ;
