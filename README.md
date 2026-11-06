@@ -97,9 +97,18 @@ Current `Faust` does not support arrays, or I can't figure out how to use it; so
 * Switch it to another frequency, then calibrate.
 * Now we able to hot switch frequency with `Volume` knobs.
 
-What's next
------------
+My meter looks different
+------------------------
+Use `Disco glasses` icon, or `Right click` then `Change theme...`, select `Tube`.
 
+Top right VU meters are unstable
+--------------------------------
+Settings `->` Configure Carla `->` Interface refresh interval, select some 19 ms or similar not interferes with frequency.
+
+
+
+What's next
+===========
 Same not-so-complicated hardware can be used for way more things, along LCR Meter. Example is Bode plots (amplitude frequency responce graphs) of same DUTs (measured with LCR Meter), as well as cables, transformers, and other passive components.
 
 Sadly, [JACK tools](https://github.com/jackaudio/jack-example-tools/tree/main/example-clients) are does not provides code which records and plays at same time (or at least play only). As this is fragile realtime component, it can not be created by me. So direct Bode plots, with coherent frequency stimulus and receiver, as LCR Meter have, are impossible in its most simple form. Faust currently does not provide simple Graph primitive, as this is not defined at sound plugins specs. So only we can do to keep it simple and understandeable, is to use incoherent measurements (more precisely - just _estimations_) plots, which is done with wideband, max possible power white noise generator. Dynamic range and sensitivity are both way too worse than coherent method. Well, let's try.
