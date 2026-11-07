@@ -109,11 +109,11 @@ Settings `->` Configure Carla `->` Interface refresh interval, select some 19 ms
 
 What's next
 ===========
-Same not-so-complicated hardware can be used for way more things, along LCR Meter. Example is Bode plots (amplitude frequency responce graphs) of same DUTs (measured with LCR Meter), as well as cables, transformers, and other passive components.
+Same not-so-complicated hardware can be used for way more things, along LCR Meter. Example is Bode plots (amplitude frequency responce graphs) of same DUTs (measured with LCR Meter), as well as cables, transformers, and other passive components. Time domain reflectometry is also possible, but, it will be too coarse (miles).
 
-Sadly, [JACK tools](https://github.com/jackaudio/jack-example-tools/tree/main/example-clients) are does not provides code which records and plays at same time (or at least play only). As this is fragile realtime component, it can not be created by me. So direct Bode plots, with coherent frequency stimulus and receiver, as LCR Meter have, are impossible in its most simple form. Faust currently does not provide simple Graph primitive, as this is not defined at sound plugins specs. So only we can do to keep it simple and understandeable, is to use incoherent measurements (more precisely - just _estimations_) plots, which is done with wideband, max possible power white noise generator. Dynamic range and sensitivity are both way too worse than coherent method. Well, let's try.
+Sadly, [JACK tools](https://github.com/jackaudio/jack-example-tools/tree/main/example-clients) are does not provides code which records and plays at same time (or at least play only). As this is fragile realtime component, it can not be created by me. So direct Bode plots, with coherent frequency stimulus and receiver, as LCR Meter have, are impossible in its most simple form. Faust currently does not provide simple Graph primitive, as this is not defined at sound plugins specs. So only we can do to keep it simple and understandeable, is to use incoherent measurements (more precisely - just _estimations_) plots, which is done with wideband, max possible power white noise source. Dynamic range and sensitivity are both way too worse than coherent method. Well, let's try.
 
-One may note that our Meter provides two extra white noise outputs. Connect these, instead of regular outputs of LCR Meter, to system output:
+One may note that our Meter provides extra differential white noise output. Connect it, instead of regular output of LCR Meter, to system output:
 
 <img src="img/bode_plot_setup.png" />
 
