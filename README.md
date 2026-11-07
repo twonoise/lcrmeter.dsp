@@ -99,7 +99,7 @@ Current `Faust` does not support arrays, or I can't figure out how to use it; so
 
 My meter looks different
 ------------------------
-Use `Disco glasses` icon, or `Right click` then `Change theme...`, select `Tube`.
+Check if your Carla is from [mentioned code](https://github.com/twonoise/carla-patches). Use `Disco glasses` icon, or `Right click` then `Change theme...`, select `Tube`. 
 
 Top right VU meters are unstable
 --------------------------------
