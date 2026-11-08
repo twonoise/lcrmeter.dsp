@@ -50,7 +50,9 @@ Now it's time to measure some electronic parts, and compare results with DT-9935
 Note that `.dsp` code also acts as documentation, and it is _intended_ to user enhancements: 
 * _Example_. Want a cat eye as magnitude meter? Replace `mag_meter` limits from `0.0, 9.999` to `0.0, 1.0`.
 
-You can see the system diagram at [faustide.grame.fr](https://faustide.grame.fr/). Put our code there, run it, find `Diagram` tab. Dark blue submodules are clickable.
+You can see the system diagram at [faustide.grame.fr](https://faustide.grame.fr/). Put our code there, run it, find `Diagram` tab. Dark blue submodules are clickable. Btw, it should be possible to work with it directly in browser. I am did not see stereo duplex sound i/o working with browsers these days, yet maybe you will be more happy.
+
+<img src="img/faustide_ui.png" />
 
 SNR and EMI
 -----------
