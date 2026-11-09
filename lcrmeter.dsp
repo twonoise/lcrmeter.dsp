@@ -15,12 +15,14 @@ inv = xor (1);
 posedge(x, y) = ((x' == 0) & (x != 0)) | ((y' == 0) & (y != 0));
 rsff(r, s) = select2(r, s, 0) * posedge(r, s) : + ~ *(1-posedge(r, s));
 
-reset = (ba.time == 1); /* Will it roll over? FIXME */
-
 /* There is no button vs checkbox (aka lock button) difference yet. button() should have 'lv2:trigger' bit, while checkbox() should not. See https://github.com/falkTX/Carla/issues/2082  Meanwhile, use two button press. */
-change = reset | (f_num != f_num') | (tx_lvl != tx_lvl');
+change = (f_num != f_num') | (tx_lvl != tx_lvl');
 calib = checkbox ("[00] Calib");
+
+/* 1. Open the circuit (disconnect DUT), then 2. press Calib */
 calib_open = rsff(change | ((calib == 1) & (calib' == 0)), calib'');
+
+/* 3. Connect resistor same as Rref, then 4. release Calib, see UNCAL goes off */
 calib_rref = rsff(change | calib, calib : inv) :
   inv : hbargraph("[01] [style:led] UNCAL", 0, 1) : inv;
 
@@ -100,32 +102,32 @@ L(Z, A) = Z * sin(A) / (2.0 * ma.PI * f) :
 
 process =
   hgroup("LCR Meter",
-  /* Test tone TX output, differential */
-  ( stimuliI <: * (tx_lvl) / 100.0, * (-tx_lvl) / 100.0 : _, _),
+    /* Test tone TX output, differential */
+    ( stimuliI <: * (tx_lvl) / 100.0, * (-tx_lvl) / 100.0 : _, _),
 
-  (
-    /* Differential input */
-    (_ - _) / IS_DIFF <:
+    (
+      /* Differential input */
+      (_ - _) / IS_DIFF <:
 
-    /* Quadrature receiver */
-    (_ <: rxI, rxQ <: rxMag, rxAng :
+      /* Quadrature receiver */
+      (_ <: rxI, rxQ <: rxMag, rxAng :
 
-    /* De-embed ref magnitude */
-    (_ <: _ , (_ <: / (ba.latch(calib_open) : max(ma.EPSILON))) :> select2(calib_open) : mag_meter ),
+      /* De-embed ref magnitude */
+      (_ <: _ , (_ <: / (ba.latch(calib_open) : max(ma.EPSILON))) :> select2(calib_open) : mag_meter ),
 
-    /* De-embed ref phase, FIXME make it simpler */
-    (_ <: - (ba.latch(calib_open)) + (ma.PI * 3) : % (ma.PI * 2) : - (ma.PI) : ma.rad2deg : ph_meter : ma.deg2rad)
+      /* De-embed ref phase, FIXME make it simpler */
+      (_ <: - (ba.latch(calib_open)) + (ma.PI * 3) : % (ma.PI * 2) : - (ma.PI) : ma.rad2deg : ph_meter : ma.deg2rad)
 
-    <: Z, A
+      <: Z, A
 
-    <: Resr, C, L)
+      <: Resr, C, L)
 
-    /* Thru output (after diff-to-single ended conversion).
-     * VU meter or Spectrum analyzer can be connected here */
-    , _
-  ),
+      /* Thru output (after diff-to-single ended conversion).
+      * VU meter or Spectrum analyzer can be connected here */
+      , _
+    ),
 
-  /* Noise source for Bode plots */
-  ( no.noise <: * (1), * (-1) : _, _)
+    /* Noise source for Bode plots */
+    ( no.noise <: * (1), * (-1) : _, _)
   )
 ;
