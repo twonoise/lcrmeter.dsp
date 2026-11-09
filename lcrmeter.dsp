@@ -8,6 +8,35 @@ declare description "LCR Meter using differential signalling. Use two series res
 
 import("stdfaust.lib");
 
+IS_DIFF = 2.0; // 1.0 for single-ended
+
+
+/* I. Heterodyne section.
+ * Goes to both: transmitter output, as well as, receiver heterodyne input */
+
+stimuliI = os.osccos(f);
+stimuliQ = os.oscsin(f);
+
+
+/* II. Transmitter section */
+
+/* Do not forget to check if frequency is adequate for current sample rate. */
+F(x) = rdtable(waveform{10, 20, 50, 100, 200, 500, 1000, 2000, 5000, 10000, 20000}, x);
+f_num = hslider ("[02] [style:knob] Freq", 3, 0, 10, 1) : int;
+f = F(f_num) : hbargraph("[03] [style:numerical] Freq Hz [unit:Hz]", 1.0, 1e6);
+
+/* Two precision, low inductance series resistors. Ohm, per wire. */
+R(x) = rdtable(waveform{100, 1e3, 10e3, 100e3}, x);
+r_num = hslider ("[04] [style:knob] Rref", 1, 0, 3, 1) : int;
+Rref = R(r_num) : hbargraph("[05] [style:numerical] Rref Ohm [unit:Ohm]", 1.0, 100e3);
+
+/* Set alsamixer: PCM, Master & Headphone: 100%, Line-in to min position when OVL still lit.
+ * Then fine tune this to be just a bit below OVL goes out. */
+tx_lvl = hslider ("[06] [style:knob] Tx Level [unit:%]", 100, 75, 100, 0.1);
+
+
+/* IIIa. Receiver section: Calibration latches */
+
 /* Extra: inverter */
 inv = xor (1);
 
@@ -26,23 +55,8 @@ calib_open = rsff(change | ((calib == 1) & (calib' == 0)), calib'');
 calib_rref = rsff(change | calib, calib : inv) :
   inv : hbargraph("[01] [style:led] UNCAL", 0, 1) : inv;
 
-/* Do not forget to check if frequency is adequate for current sample rate. */
-F(x) = rdtable(waveform{10, 20, 50, 100, 200, 500, 1000, 2000, 5000, 10000, 20000}, x);
-f_num = hslider ("[02] [style:knob] Freq", 3, 0, 10, 1) : int;
-f = F(f_num) : hbargraph("[03] [style:numerical] Freq Hz [unit:Hz]", 1.0, 1e6);
 
-/* Two precision, low inductance series resistors. Ohm, per wire. */
-R(x) = rdtable(waveform{100, 1e3, 10e3, 100e3}, x);
-r_num = hslider ("[04] [style:knob] Rref", 1, 0, 3, 1) : int;
-Rref = R(r_num) : hbargraph("[05] [style:numerical] Rref Ohm [unit:Ohm]", 1.0, 100e3);
-
-/* Set alsamixer: PCM, Master & Headphone: 100%, Line-in to min position when OVL still lit.
- * Then fine tune this to be just a bit below OVL goes out. */
-tx_lvl = hslider ("[06] [style:knob] Tx Level [unit:%]", 100, 75, 100, 0.1);
-
-/* Transmitter: goes to TX output, and to receiver heterodyne input */
-stimuliI = os.osccos(f);
-stimuliQ = os.oscsin(f);
+/* IIIb. Receiver section: Heterodyne driven quadrature receiver */
 
 /* Coherent receiver, with some alarms */
 rxI(x) = x * stimuliI : fi.lowpass(3, 3.3) : video_filter : video_filter_more;
@@ -62,17 +76,13 @@ flt = hslider ("[10] [style:menu{'Off':0;'Mid':1;'Full':2}] Filter", 0, 0, 2, 1)
 video_filter      = _ <: select2(flt,     _, si.smooth(1 - 1e-3));
 video_filter_more = _ <: select2(flt > 1, _, si.smooth(1 - 1e-5));
 
-/* LCR Math. See Tek appnote 75W-28152-2 "Capacitance and Inductance Measurements..." */
 
-/* Internal (output) resistance is sum of: headphone output of codec, its output series resistor and capacitor, connectors, wires @ 1 kHz. It is important to measure it as precise as possible, then keep stable. Ohm, per mono wire. */
-// Rout = 65.4;
-/* Now it's also calibrated, so calibration is two stage: open the circuit, button On, connect Rref, button Off. */
+/* IV. Processing section */
 
 /* This is unity by definition, as we scale it at calibration */
 Va1 = 1.0;     // Volts
 
-IS_DIFF = 2.0; // 1.0 for single-ended
-
+/* LCR Math. See Tek appnote 75W-28152-2 "Capacitance and Inductance Measurements..." */
 /* Equation 2 */
 Z(Va2,ang) = IS_DIFF * Va2 / sqrt(Va1^2 - 2.0 * Va1 * Va2 * cos(ang) + Va2^2) :
   min(1e9) <: / (ba.latch(calib_rref) : max(ma.EPSILON)) :
@@ -100,34 +110,38 @@ C(Z, A) = -1.0 / (2.0 * ma.PI * f * Z * sin(A)) :
 L(Z, A) = Z * sin(A) / (2.0 * ma.PI * f) :
   * (is_good_reactive(A)) : hbargraph("[16] [style:numerical] L, H [unit:H]", -1.0, 99.999);
 
-process =
-  hgroup("LCR Meter",
-    /* Test tone TX output, differential */
-    ( stimuliI <: * (tx_lvl) / 100.0, * (-tx_lvl) / 100.0 : _, _),
 
-    (
-      /* Differential input */
-      (_ - _) / IS_DIFF <:
+/* V. Standalone White Gaussian Noise source for Bode plots */
+wgn = no.noise <: * (1), * (-1);
 
-      /* Quadrature receiver */
-      (_ <: rxI, rxQ <: rxMag, rxAng :
 
-      /* De-embed ref magnitude */
-      (_ <: _ , (_ <: / (ba.latch(calib_open) : max(ma.EPSILON))) :> select2(calib_open) : mag_meter ),
+/* I/O and interconnections */
 
-      /* De-embed ref phase, FIXME make it simpler */
-      (_ <: - (ba.latch(calib_open)) + (ma.PI * 3) : % (ma.PI * 2) : - (ma.PI) : ma.rad2deg : ph_meter : ma.deg2rad)
+process = hgroup("LCR Meter",
+  /* Test tone TX output, differential */
+  (stimuliI <: * (tx_lvl) / 100.0, * (-tx_lvl) / 100.0 : _, _),
 
-      <: Z, A
+  (
+    /* Differential input */
+    (_ - _) / IS_DIFF <:
 
-      <: Resr, C, L)
+    /* Quadrature receiver */
+    (_ <: rxI, rxQ <: rxMag, rxAng :
 
-      /* Thru output (after diff-to-single ended conversion).
-      * VU meter or Spectrum analyzer can be connected here */
-      , _
-    ),
+    /* De-embed ref magnitude */
+    (_ <: _ , (_ <: / (ba.latch(calib_open) : max(ma.EPSILON))) :> select2(calib_open) : mag_meter ),
 
-    /* Noise source for Bode plots */
-    ( no.noise <: * (1), * (-1) : _, _)
-  )
-;
+    /* De-embed ref phase, FIXME make it simpler */
+    (_ <: - (ba.latch(calib_open)) + (ma.PI * 3) : % (ma.PI * 2) : - (ma.PI) : ma.rad2deg : ph_meter : ma.deg2rad)
+
+    <: Z, A
+
+    <: Resr, C, L) /* With output pin for each */
+
+    /* Thru output (after diff-to-single ended conversion).
+     * VU meter or Spectrum analyzer can be connected here */
+    , _
+  ),
+
+  (wgn : _, _)
+);
