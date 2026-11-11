@@ -32,7 +32,7 @@ Rref = R(r_num) : hbargraph("[05] [style:numerical] Rref Ohm [unit:Ohm]", 1.0, 1
 
 /* Set alsamixer: PCM, Master & Headphone: 100%, Line-in to min position when OVL still lit.
  * Then fine tune this to be just a bit below OVL goes out. */
-tx_lvl = hslider ("[06] [style:knob] Tx Level [unit:%]", 100, 75, 100, 0.1);
+tx_lvl = hslider ("[06] [style:knob] Tx Level [unit:%]", 100, 75, 100, 0.1) / 100.0;
 
 
 /* IIIa. Receiver section: Calibration latches */
@@ -112,14 +112,14 @@ L(Z, A) = Z * sin(A) / (2.0 * ma.PI * f) :
 
 
 /* V. Standalone White Gaussian Noise source for Bode plots */
-wgn = no.noise <: * (1), * (-1);
+wgn_source = no.noise;
 
 
 /* I/O and interconnections */
 
 process = hgroup("LCR Meter",
-  /* Test tone TX output, differential */
-  (stimuliI <: * (tx_lvl) / 100.0, * (-tx_lvl) / 100.0 : _, _),
+  /* Differential tone output */
+  (stimuliI <: * (tx_lvl), * (-tx_lvl) : _, _),
 
   (
     /* Differential input */
@@ -136,12 +136,13 @@ process = hgroup("LCR Meter",
 
     <: Z, A
 
-    <: Resr, C, L) /* With output pin for each */
+    <: Resr, C, L) /* With parameter value (CV) output pin for each */
 
-    /* Thru output (after diff-to-single ended conversion).
-     * VU meter or Spectrum analyzer can be connected here */
+    /* Thru output, Diff input to Single ended converted.
+     * VU meter or Spectrum analyzer, or both, can be connected here */
     , _
   ),
 
-  (wgn : _, _)
+  /* Differential noise output */
+  (wgn_source <: * (1), * (-1) : _, _)
 );
