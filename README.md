@@ -83,6 +83,8 @@ Using retasked front pink input, together with phones output, allows to use only
 
 Input (parallel) resistance of such mic input will be way worse (lower) than blue Line In, thus it is rarely possible to have `Rref` above ~10k Ohm.
 
+If you use **Audacity**, note that it can switch alsamixer's inputs, as well as, may or may not restore it at exit.
+
 Line Out vs HP Out
 ------------------
 If headphone output is not available, stereo lightgreen Line Out can be used. Do not forget to enable it with `alsamixer`. 
