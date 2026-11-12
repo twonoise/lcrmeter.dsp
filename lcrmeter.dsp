@@ -1,4 +1,4 @@
-// faust2lv2 -double lcrmeter.dsp  &&  sed -i -e 's/in0/In/g' -e 's/in1/InInv/g' -e 's/out0/Out/g' -e 's/out1/OutInv/g' -e 's/out2/Resr_Ohm/g' -e 's/out3/C_F/g' -e 's/out4/L_H/g' -e '/lv2:name "Freq/a\\tlv2:portProperty lv2:integer ;' -e '/lv2:name "Rref/a\\tlv2:portProperty lv2:integer ;' -e '/lv2:name "Filter/a\\tlv2:portProperty lv2:integer ;' -e 's/out4/L_mH/g' -e '/lv2:name "LOS/a\\tlv2:portProperty lv2:integer ;' -e 's/out5/Thru/g' -e 's/out6/NoiseOut/g' -e 's/out7/NoiseOutInv/g' -e '/lv2:name "LOS/a\\tlv2:portProperty lv2:integer ;' -e '/lv2:name "OVL/a\\tlv2:portProperty lv2:integer ;' -e '/lv2:name "UNCAL/a\\tlv2:portProperty lv2:integer ;' -e '/lv2:name "RESONANT/a\\tlv2:portProperty lv2:integer ;' -e '/lv2:name "REACTIVE/a\\tlv2:portProperty lv2:integer ;' lcrmeter.lv2/lcrmeter.ttl  &&  cp -R lcrmeter.lv2/ /usr/local/lib/lv2/
+// faust2lv2 -double lcrmeter.dsp  &&  sed -i -e 's/in0/In/g' -e 's/in1/InInv/g' -e 's/out0/Out/g' -e 's/out1/OutInv/g' -e 's/out2/Resr_Ohm/g' -e 's/out3/C_F/g' -e 's/out4/L_H/g' -e '/lv2:name "Freq"/a\\tlv2:portProperty lv2:integer ;' -e '/lv2:name "Rref"/a\\tlv2:portProperty lv2:integer ;' -e '/lv2:name "Filter/a\\tlv2:portProperty lv2:integer ;' -e 's/out4/L_mH/g' -e '/lv2:name "LOS/a\\tlv2:portProperty lv2:integer ;' -e 's/out5/Thru/g' -e 's/out6/NoiseOut/g' -e 's/out7/NoiseOutInv/g' -e '/lv2:name "LOS/a\\tlv2:portProperty lv2:integer ;' -e '/lv2:name "OVL/a\\tlv2:portProperty lv2:integer ;' -e '/lv2:name "UNCAL/a\\tlv2:portProperty lv2:integer ;' -e '/lv2:name "RESONANT/a\\tlv2:portProperty lv2:integer ;' -e '/lv2:name "REACTIVE/a\\tlv2:portProperty lv2:integer ;' lcrmeter.lv2/lcrmeter.ttl  &&  cp -R lcrmeter.lv2/ /usr/local/lib/lv2/
 
 declare name "LCRMeter"; // No spaces for better JACK port names.
 declare version "2026";
@@ -20,10 +20,14 @@ stimuliQ = os.oscsin(f);
 
 /* II. Transmitter section */
 
+/* Nearest frequency to get continuous tone */
+t = ma.SR / pl.tablesize;    /* Time of Oscillator table size */
+fn(f) = round(f / t) * t;    /* Nearest frequency */
+
 /* Do not forget to check if frequency is adequate for current sample rate. */
 F(x) = rdtable(waveform{10, 20, 50, 100, 200, 500, 1000, 2000, 5000, 10000, 20000}, x);
 f_num = hslider ("[02] [style:knob] Freq", 3, 0, 10, 1) : int;
-f = F(f_num) : hbargraph("[03] [style:numerical] Freq Hz [unit:Hz]", 1.0, 1e6);
+f = F(f_num) : fn : hbargraph("[03] [style:numerical] Freq Hz [unit:Hz]", 1.0, 1e6);
 
 /* Two precision, low inductance series resistors. Ohm, per wire. */
 R(x) = rdtable(waveform{100, 1e3, 10e3, 100e3}, x);
