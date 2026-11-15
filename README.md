@@ -127,6 +127,8 @@ At other side, we need some receiver which can plot something. I will use [Jasmi
 
 Log frequency scale is needed to better represent reactive components (DUTs) behaviour. You may also need to reduce Spectrum analyzer reference bandwidth (RBW, `F3`) and/or to use video filter (VBW, `F4`), as well as, stretch Y axis twice (`F7`) and/or shift it (`F8`). Then connect various DUTs, and compare result with plots at Tektronix article, to guess how to better measure it (select `Rref` and frequency for LCR Meter), as well as, find some impurities in DUTs, like resonances.
 
+Note that, unlike of coherent method, here is phase information is not used. This theoretically allows for use of non realtime sound cards, like USB ones. However, it is still a challenge to find USB device of adequate size, weight, and cost, with real stereo low noise sound input, yet not less than 192k S/s sample rate. (Spoiler: It's impossible today, as it's AI and gaming era, looks like no sound recording artists in demand any more).
+
 <img src="img/jasmine-sa_log_scale.png" />
 
 _On photo:_ Ref level, and three DUTs, using 1k Ohm `Rref`: 
