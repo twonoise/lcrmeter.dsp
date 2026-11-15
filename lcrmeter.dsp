@@ -20,14 +20,14 @@ stimuliQ = os.oscsin(f);
 
 /* II. Transmitter section */
 
-/* Nearest frequency to get continuous tone */
-t = ma.SR / pl.tablesize;    /* Time of Oscillator table size */
-fn(f) = round(f / t) * t;    /* Nearest frequency */
+/* Nearest frequency to get same LUT each time, save some CPU. */
+t = ma.SR / pl.tablesize;         /* Time of Oscillator table size */
+nearest(f) = round(f / t) * t;    /* Nearest frequency */
 
 /* Do not forget to check if frequency is adequate for current sample rate. */
 F(x) = rdtable(waveform{10, 20, 50, 100, 200, 500, 1000, 2000, 5000, 10000, 20000}, x);
 f_num = hslider ("[02] [style:knob] Freq", 3, 0, 10, 1) : int;
-f = F(f_num) : fn : hbargraph("[03] [style:numerical] Freq Hz [unit:Hz]", 1.0, 1e6);
+f = F(f_num) /* : nearest */ : hbargraph("[03] [style:numerical] Freq Hz [unit:Hz]", 1.0, 1e6);
 
 /* Two precision, low inductance series resistors. Ohm, per wire. */
 R(x) = rdtable(waveform{100, 1e3, 10e3, 100e3}, x);
