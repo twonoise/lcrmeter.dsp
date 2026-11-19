@@ -109,6 +109,22 @@ Top right VU meters are unstable
 --------------------------------
 Settings `->` Configure Carla `->` Interface refresh interval, select some 19 ms or similar not interferes with frequency.
 
+Measurement range
+-----------------
+
+(TBD)
+
+To measure large capacitance, we will need strong AC current, not available from codec. So it's obvious to add extra power amplifier. But transformer is also possible. We need like 100:1 to 1000:1 (for `Rref` 1 to 0.1 Ohm), physically large and heavy one, palm sized at least. It should have full EMI shielding. Test probes should be short. Place transformer between output and `Rref`. Use like 10 Hz frequency. This low frequency will work for 60 Hz transformer without core saturation, as our power is tiny part of its rated one. Use `alsamixer` at open-circuit calibration phase, to compensate voltage magnitude loss due to transformer.
+
+Enhance code like this:
+
+    /* For below 100 Ohm, extra transformer or power amplifier will be need. */
+    R(x) = rdtable(waveform{0.1, 1, 10, 100, 1e3, 10e3, 100e3}, x);
+    r_num = hslider ("[04] [style:knob] Rref", 4, 0, 6, 1) : int;
+
+Now the problematic part. Capacitors with very large capacitance, but physically small, are have ESR way higher than reactance at our (like 10 Hz) frequency. This causes unstable results, and measured value will be somewhat lower than actual. This can be more or less compensated by selection of transformer with lower leakage inductance; transformers with high transfer ratios are can be created by add few turns winding of thick wire. If this is acceptable, 1 F and above capacitance measurement is possible. But still, these _ultracapacitors_ are not designed for AC, and should be measured with DC methods or infrasound frequencies, both are impossible with consumer sound cards.
+
+For regular capacitors of like 10...100 mF, widely available 20:1 or 50:1 transformers, as well as 1 to 10 Ohm `Rref`, are should be good.
 
 
 What's next
