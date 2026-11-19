@@ -32,7 +32,7 @@ f = F(f_num) /* : nearest */ : hbargraph("[03] [style:numerical] Freq Hz [unit:H
 /* Two precision, low inductance series resistors. Ohm, per wire. */
 R(x) = rdtable(waveform{100, 1e3, 10e3, 100e3}, x);
 r_num = hslider ("[04] [style:knob] Rref", 1, 0, 3, 1) : int;
-Rref = R(r_num) : hbargraph("[05] [style:numerical] Rref Ohm [unit:Ohm]", 1.0, 100e3);
+Rref = R(r_num) : hbargraph("[05] [style:numerical] Rref Ohm [unit:Ohm]", 0.1, 100e3);
 
 /* Set alsamixer: PCM, Master & Headphone: 100%, Line-in to min position when OVL still lit.
  * Then fine tune this to be just a bit below OVL goes out. */
@@ -97,14 +97,14 @@ Z(Va2,ang) = IS_DIFF * Va2 / sqrt(Va1^2 - 2.0 * Va1 * Va2 * cos(ang) + Va2^2) :
 A(Va2,ang) = ang - atan(-Va2 * sin(ang) / (Va1 - Va2 * cos(ang))) :
   (_ <: _,(ma.rad2deg : hbargraph("[12] [style:numerical] A Deg [unit:Deg]", -180, 180) :
   /* Resistive = 0; Reactive = 1 (Info); Resonant = 2 (Alarm), which means DUT isn't single unit, but some circuit or tank; or, measure beyond rezonant frequency. */
-  abs <: ((> (5.0)) + (> (90.0))) : hbargraph("[13] [style:led] REACTIVE", 0, 2)) :
+  abs <: ((> (3.0)) + (> (90.0))) : hbargraph("[13] [style:led] REACTIVE", 0, 2)) :
   attach);
 
 /* Equation 4 or 6 */
 Resr(Z, A) = Z * cos(A) :
   hbargraph("[14] [style:numerical] Resr Ohm [unit:Ohm]", -1e6, 1e7);
 
-is_good_reactive = (abs : ma.rad2deg <: (> (5.0)) * (< (90.0)));
+is_good_reactive = (abs : ma.rad2deg <: (> (3.0)) * (< (99.0)));
 
 /* Equation 5 */
 C(Z, A) = -1.0 / (2.0 * ma.PI * f * Z * sin(A)) :
