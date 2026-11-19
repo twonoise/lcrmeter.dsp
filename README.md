@@ -114,7 +114,7 @@ Measurement range
 
 (TBD)
 
-To measure large capacitance, we will need strong AC current, not available from codec. So it's obvious to add extra power amplifier. But transformer is also possible. We need like 100:1 to 1000:1 (for `Rref` 1 to 0.1 Ohm), physically large and heavy one, palm sized at least. It should have full EMI shielding. Test probes should be short. Place transformer between output and `Rref`. Use like 10 Hz frequency. This low frequency will work for 60 Hz transformer without core saturation, as our power is tiny part of its rated one. Use `alsamixer` at open-circuit calibration phase, to compensate voltage magnitude loss due to transformer.
+To measure large capacitance, we will need strong AC current, not available from codec. So it's obvious to add extra power amplifier. But transformer is also possible. We need like 100:1 to 1000:1 (for `Rref` 1 to 0.1 Ohm), physically large and heavy one, palm sized at least. It should have full EMI shielding. Test probes should be short. Place transformer between output and `Rref`. Use like 10 Hz frequency. This low frequency will work for 60 Hz transformer without core saturation, as our power is tiny part of its rated one. Use `alsamixer` at open-circuit calibration phase, to compensate voltage magnitude loss due to transformer. Actual transfer ratio of transformer will be accounted by calibration.
 
 Enhance code like this:
 
