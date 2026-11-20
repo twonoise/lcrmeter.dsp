@@ -126,6 +126,10 @@ Now the problematic part. Capacitors with very large capacitance, but physically
 
 For regular capacitors of like 10...100 mF, widely available 5...50:1 transformers, as well as 1 to 10 Ohm `Rref`, are should be good. It is worth to define regular 10:1 (120 to 12 VAC) wall outlet transformer, with Rref of 10 Ohm, as basic transformer setup. If you obtain special use transformer, or very old one, its core can go not only below, but also well above 60 Hz; but _leakage inductance_ can become limiting factor at high frequencies.
 
+Speaker output
+--------------
+Some motherboards are have mono or stereo loudspeaker output (not PC speaker, we talk about codec outputs). Both mono or stereo are should be perfectly suitable for measurements, as today they will be D class power amp with differential output, even when mono. But that's theory. I've measured mono output of _PRIME H610I-PLUS D4_ motherboard. Even when unloaded, it shows insanely bad specs: low magnitude (way too worse than loaded headphone output), huge THD, much noise. Loaded with 4 Ohm load, it is even worse. Maybe it is just damaged. Please report about your tests.
+
 
 What's next
 ===========
