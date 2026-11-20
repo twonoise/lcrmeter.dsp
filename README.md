@@ -124,7 +124,7 @@ Enhance code like this:
 
 Now the problematic part. Capacitors with very large capacitance, but physically small, are have ESR way higher than reactance at our (like 10 Hz) frequency. This causes unstable results, and measured value will be somewhat lower than actual. This can be more or less compensated by selection of transformer with lower leakage inductance; transformers with high transfer ratios are can be created by add few turns winding of thick wire. If this is acceptable, 1 F and above capacitance measurement is possible. But still, these _ultracapacitors_ are not designed for AC. Not purely electrostatical ultracaps are inertional, so capacitance drops above 0.01-0.1 Hz; some are requires DC bias for full capacitance. Should be measured with DC methods or infrasound frequencies, both are impossible with consumer sound cards.
 
-For regular capacitors of like 10...100 mF, widely available 20:1 or 50:1 transformers, as well as 1 to 10 Ohm `Rref`, are should be good.
+For regular capacitors of like 10...100 mF, widely available 5...50:1 transformers, as well as 1 to 10 Ohm `Rref`, are should be good. It is worth to define regular 10:1 (120 to 12 VAC) wall outlet transformer, with Rref of 10 Ohm, as basic transformer setup. If you obtain special use transformer, or very old one, its core can go not only below, but also well above 60 Hz; but _leakage inductance_ can become limiting factor at high frequencies.
 
 
 What's next
