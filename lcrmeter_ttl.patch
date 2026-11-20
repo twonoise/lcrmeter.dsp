@@ -1,0 +1,33 @@
+--- /usr/local/lib/lv2/lcrmeter.lv2/lcrmeter.ttl	2026-11-20 19:25:20.934284671 +0300
++++ /usr/local/lib/lv2/lcrmeter.lv2/lcrmeter.ttl.cv	2026-11-20 19:12:54.147872823 +0300
+@@ -274,26 +274,22 @@
+         lv2:symbol "OutInv" ;
+         lv2:name "OutInv" ;
+     ] , [
+-        a lv2:OutputPort ;
+-        a lv2:AudioPort ;
++        a lv2:OutputPort, lv2:CVPort ;
+         lv2:index 21 ;
+         lv2:symbol "Resr_Ohm" ;
+         lv2:name "Resr_Ohm" ;
+     ] , [
+-        a lv2:OutputPort ;
+-        a lv2:AudioPort ;
++        a lv2:OutputPort, lv2:CVPort ;
+         lv2:index 22 ;
+         lv2:symbol "C_F" ;
+         lv2:name "C_F" ;
+     ] , [
+-        a lv2:OutputPort ;
+-        a lv2:AudioPort ;
++        a lv2:OutputPort, lv2:CVPort ;
+         lv2:index 23 ;
+         lv2:symbol "L_H" ;
+         lv2:name "L_H" ;
+     ] , [
+-        a lv2:OutputPort ;
+-        a lv2:AudioPort ;
++        a lv2:OutputPort, lv2:CVPort ;
+         lv2:index 24 ;
+         lv2:symbol "Thru" ;
+         lv2:name "Thru" ;
