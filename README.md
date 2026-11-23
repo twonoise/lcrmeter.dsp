@@ -128,7 +128,21 @@ For regular capacitors of like 10...100 mF, widely available 5...50:1 transforme
 
 Speaker output
 --------------
-Some motherboards are have mono or stereo loudspeaker output (not PC speaker, we talk about codec outputs). Both mono or stereo are should be perfectly suitable for measurements, as today they will be D class power amp with differential output, even when mono. But that's theory. I've measured mono output of _PRIME H610I-PLUS D4_ motherboard. Even when unloaded, it shows insanely bad specs: low magnitude (way too worse than loaded headphone output), huge THD, much noise. Loaded with 4 Ohm load, it is even worse. Maybe it is just damaged. Please report about your tests.
+Some motherboards are have mono or stereo loudspeaker output (not PC speaker, we talk about codec outputs). Both mono or stereo are should be perfectly suitable for measurements, as today they will be D class power amp with differential output, even when mono. But that's theory.
+
+I've try to use mono speaker output of `PRIME H610I-PLUS D4` motherboard, as well as, stereo speakers outputs of `PRIME H510T2/CSM`. Sadly, turns out that both are have plug detection, which earlier or later routes the power output into middle of nowhere. This is unrecoverable; at least, not `/etc/modprobe.d/alsa-base.conf` -> `options snd-hda-intel jack_detect=no`, nor `hdajackretask` -> `Plug detection: Not present` for all jacks, are not helpful. Yes, **plug detection** for **internal speaker(s)**! I can't catch which changed at `amixer -D hw:PCH contents`; and, `alsamixer` also does not show anything relevant; only rebooting is helps for a short time. Trying something like
+
+    amixer -D hw:PCH cset iface=PCM,name='Playback Channel Map' 0,0
+
+stucks with
+
+    amixer: Control hw:PCH element write error: Operation not permitted
+
+like these values are read only.
+
+One may note that plug detection here should be just technically impossible, as it is not codec's jack directly, it is amplified by separate power amplifer, `ALC122` in both these cases. There is no specs available for this IC (as well as for ALC897 codec), so I can't exactly see if it can have some load detection. May be you will be more lucky at that.
+
+These outputs not only powerful, but should be DC coupled, which is perfect for our meter (and somewhat like 1/2 VCC33 biased above ground, which will not disturb our line input, as it is AC coupled). Note that mono output should be driven by in-phase (same) signal, not straight & inverted (diff) one, as all other cases. This is easily done via Jack Graph or Carla Patchbay.
 
 
 What's next
