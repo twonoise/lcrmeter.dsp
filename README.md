@@ -142,8 +142,9 @@ like these values are read only.
 
 One may note that plug detection here should be just technically impossible, as it is not codec's jack directly, it is amplified by separate power amplifer, `ALC122` in both these cases. There is no specs available for this IC (as well as for ALC897 codec), so I can't exactly see if it can have some load detection. May be you will be more lucky at that.
 
-These outputs not only powerful, but should be DC coupled, which is perfect for our meter (and somewhat like 1/2 VCC33 biased above ground, which will not disturb our line input, as it is AC coupled). Note that mono output should be driven by in-phase (same) signal, not straight & inverted (diff) one, as all other cases. This is easily done via Jack Graph or Carla Patchbay.
+These outputs not only powerful, but should be DC coupled, which is perfect for our meter (and somewhat like 1/2 VCC33 biased above ground, which will not disturb our line input, as it is AC coupled). Note that mono output should be driven by in-phase (same) signal, not straight & inverted (diff) one, as all other cases. This is easily done via Jack Graph or Carla Patchbay:
 
+<img src="img/mono_speaker_output.png" />
 
 What's next
 ===========
