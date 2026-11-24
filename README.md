@@ -38,7 +38,8 @@ Now it's time to use `Calib` button of `LCRMeter`:
 Calibration is of key importance, as we do not have 2nd stereo line input to connect it as `Va1` meter (see article). Calibration latches:
 * amplitude and
 * phase of currently selected frequency;
-* internal output resistance of sound card,
+* internal output resistance and
+* internal output capacitance (_see code_) of sound card,
 
 and uses these values as a reference. Phase here includes possible inversion due to swap of L, R wires, as well as, all propagation delays between output and input, include codec, driver, JACK buffers. Calibration effectively cancels it all, but at current frequency only. Recalibrate when frequency is changed.
 
