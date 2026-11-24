@@ -1,5 +1,11 @@
 // faust2lv2 -double lcrmeter.dsp  &&  sed -i -e 's/in0/In/g' -e 's/in1/InInv/g' -e 's/out0/Out/g' -e 's/out1/OutInv/g' -e 's/out2/Resr_Ohm/g' -e 's/out3/C_F/g' -e 's/out4/L_H/g' -e '/lv2:name "Freq"/a\\tlv2:portProperty lv2:integer ;' -e '/lv2:name "Rref"/a\\tlv2:portProperty lv2:integer ;' -e '/lv2:name "Filter/a\\tlv2:portProperty lv2:integer ;' -e 's/out4/L_mH/g' -e '/lv2:name "LOS/a\\tlv2:portProperty lv2:integer ;' -e 's/out5/Thru/g' -e 's/out6/NoiseOut/g' -e 's/out7/NoiseOutInv/g' -e '/lv2:name "LOS/a\\tlv2:portProperty lv2:integer ;' -e '/lv2:name "OVL/a\\tlv2:portProperty lv2:integer ;' -e '/lv2:name "UNCAL/a\\tlv2:portProperty lv2:integer ;' -e '/lv2:name "RESONANT/a\\tlv2:portProperty lv2:integer ;' -e '/lv2:name "REACTIVE/a\\tlv2:portProperty lv2:integer ;' lcrmeter.lv2/lcrmeter.ttl  &&  cp -R lcrmeter.lv2/ /usr/local/lib/lv2/
 
+// * NOTE Edit .ttl required for each of ports 21...24, NOTE Else balance will not work. *
+// From:	a lv2:OutputPort ;
+//			a lv2:AudioPort ;
+// To: 		a lv2:OutputPort, lv2:CVPort ;
+// See https://github.com/grame-cncm/faust/discussions/1140
+
 declare name "LCRMeter"; // No spaces for better JACK port names.
 declare version "2026";
 declare author "jpka";
@@ -30,8 +36,8 @@ f_num = hslider ("[02] [style:knob] Freq", 3, 0, 10, 1) : int;
 f = F(f_num) /* : nearest */ : hbargraph("[03] [style:numerical] Freq Hz [unit:Hz]", 1.0, 1e6);
 
 /* Two precision, low inductance series resistors. Ohm, per wire. */
-R(x) = rdtable(waveform{100, 1e3, 10e3, 100e3}, x);
-r_num = hslider ("[04] [style:knob] Rref", 1, 0, 3, 1) : int;
+R(x) = rdtable(waveform{10, 100, 1e3, 10e3, 100e3}, x);
+r_num = hslider ("[04] [style:knob] Rref", 2, 0, 4, 1) : int;
 Rref = R(r_num) : hbargraph("[05] [style:numerical] Rref Ohm [unit:Ohm]", 0.1, 100e3);
 
 /* Set alsamixer: PCM, Master & Headphone: 100%, Line-in to min position when OVL still lit.
@@ -83,18 +89,22 @@ video_filter_more = _ <: select2(flt > 1, _, si.smooth(1 - 1e-5));
 
 /* IV. Processing section */
 
+/* https://faustdoc.grame.fr/manual/faq/#does-select2-behave-like-a-standard-cc-if
+ * Safe division outputs 0 in place of +/-Inf or NaN, to block their propagation all the following chain, which damages ba.latch forever. Btw, I am wonder if it can be simpler. */
+safe_div(a, b) = select3((b == 0) + (b > 0)*2, a / min(0-ma.EPSILON, b), 0, a / max(ma.EPSILON, b));
+
 /* This is unity by definition, as we scale it at calibration */
 Va1 = 1.0;     // Volts
 
 /* LCR Math. See Tek appnote 75W-28152-2 "Capacitance and Inductance Measurements..." */
 /* Equation 2 */
-Z(Va2,ang) = IS_DIFF * Va2 / sqrt(Va1^2 - 2.0 * Va1 * Va2 * cos(ang) + Va2^2) :
-  min(1e9) <: / (ba.latch(calib_rref) : max(ma.EPSILON)) :
+Z(Va2, ang) = (IS_DIFF * Va2, sqrt(Va1^2 - 2.0 * Va1 * Va2 * cos(ang) + Va2^2)) : safe_div :
+  min(1e9) <: _, (ba.latch(calib_rref'')) : safe_div :
   * (Rref) :
   hbargraph("[11] [style:numerical] Z Ohm [unit:Ohm]", 0.0, 1e7);
 
 /* Equation 3 */
-A(Va2,ang) = ang - atan(-Va2 * sin(ang) / (Va1 - Va2 * cos(ang))) :
+A(Va2, ang) = ang - atan((-Va2 * sin(ang), Va1 - Va2 * cos(ang)) : safe_div) :
   (_ <: _,(ma.rad2deg : hbargraph("[12] [style:numerical] A Deg [unit:Deg]", -180, 180) :
   /* Resistive = 0; Reactive = 1 (Info); Resonant = 2 (Alarm), which means DUT isn't single unit, but some circuit or tank; or, measure beyond rezonant frequency. */
   abs <: ((> (3.0)) + (> (90.0))) : hbargraph("[13] [style:led] REACTIVE", 0, 2)) :
@@ -107,11 +117,12 @@ Resr(Z, A) = Z * cos(A) :
 is_good_reactive = (abs : ma.rad2deg <: (> (3.0)) * (< (99.0)));
 
 /* Equation 5 */
-C(Z, A) = -1.0 / (2.0 * ma.PI * f * Z * sin(A)) :
+
+C(Z, A) = (-1.0, 2.0 * ma.PI * f * Z * sin(A)) : safe_div :
   * (is_good_reactive(A)) : hbargraph("[15] [style:numerical] C, F [unit:F]", -1.0, 9.9999);
 
 /* Equation 7 */
-L(Z, A) = Z * sin(A) / (2.0 * ma.PI * f) :
+L(Z, A) = (Z * sin(A), 2.0 * ma.PI * f) : safe_div :
   * (is_good_reactive(A)) : hbargraph("[16] [style:numerical] L, H [unit:H]", -1.0, 99.999);
 
 
@@ -133,10 +144,13 @@ process = hgroup("LCR Meter",
     (_ <: rxI, rxQ <: rxMag, rxAng :
 
     /* De-embed ref magnitude */
-    (_ <: _ , (_ <: / (ba.latch(calib_open) : max(ma.EPSILON))) :> select2(calib_open) : mag_meter ),
+    (_ <: _ , (_ <: _, (ba.latch(calib_open)) : safe_div) :> select2(calib_open) : mag_meter),
 
     /* De-embed ref phase, FIXME make it simpler */
     (_ <: - (ba.latch(calib_open)) + (ma.PI * 3) : % (ma.PI * 2) : - (ma.PI) : ma.rad2deg : ph_meter : ma.deg2rad)
+
+    /* This optional de-embedding of internal output series capacitance of sound card, makes things better at low frequencies yet strong loads (< 1 kHz, < 1 kOhm). I use linear interpolation of extra phase shift caused by Rref load, catched at calib phase. Comment out this line if you want simpler code, or to win some CPU. */
+    <: _,  - ( _  <: _, (((1.0 - _), _) <: (_, !), (ro.cross(2) : safe_div : ba.latch(calib_rref)) : * ))
 
     <: Z, A
 
@@ -150,3 +164,6 @@ process = hgroup("LCR Meter",
   /* Differential noise output */
   (wgn_source <: * (1), * (-1) : _, _)
 );
+
+
+
