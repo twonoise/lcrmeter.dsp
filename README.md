@@ -51,7 +51,14 @@ Now it's time to measure some electronic parts, and compare results with DT-9935
 Note that `.dsp` code also acts as documentation, and it is _intended_ to user enhancements: 
 * _Example_. Want a cat eye as magnitude meter? Replace `mag_meter` limits from `0.0, 9.999` to `0.0, 1.0`.
 
-You can see the system diagram at [faustide.grame.fr](https://faustide.grame.fr/). Put our code there, run it, find `Diagram` tab. Dark blue submodules are clickable. Btw, it should be possible to work with it directly in browser. I am did not see stereo duplex sound i/o working with browsers these days, yet maybe you will be more happy.
+You can see the system diagram at [faustide.grame.fr](https://faustide.grame.fr/). Put our code there, run it, find `Diagram` tab. Dark blue submodules are clickable. Btw, it should be possible to work with it directly in browser. Looks like, `Firefox` is able to run with JACK in stereo duplex mode. Use `Audio Input` -> `JACK Capture` at Faust IDE. Sadly, it turns out that numeric displays dynamic range is not enough, as fixed floats are used currently, and can't switch to exp format. So one will need to modify our `dsp` code to scale L, C outputs to micro range.
+Same display trouble is with standalone QT5 app. It may have or do not have auto connection of ports:
+
+    faust2jaqt lcrmeter.dsp
+    sh -c "sleep 1; jack_connect system:capture_1 lcrmeter:in_0 ; jack_connect system:capture_2 lcrmeter:in_1" & ./lcrmeter
+
+Check also Bugs section.
+
 
 <img src="img/faustide_ui.png" />
 
